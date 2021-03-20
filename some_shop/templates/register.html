@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block head %}
+    <title>Register</title>
+    <link
+	    rel="stylesheet"
+	    type="text/css"
+	    href="../static/styles/file.css">
+{% endblock %}
+
+{% block header %}
+	<h1 align="center">Register</h1>
+{% endblock %}
+
+{% block nav %}
+	<a href="{% url 'home' %}"><button> Back </button></a>
+{% endblock %}
+
+{% block content %}
+	<div align="center">
+		<form method="post" action="/">
+			{% csrf_token %}
+			{{ form.as_p }}
+			<button type="submit">register</button>
+		</form>
+	</div>
+{% endblock %}
+
+{% block footer %}
+{% endblock %}

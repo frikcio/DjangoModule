@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block head %}
+    <title>Profile</title>
+    <link
+	    rel="stylesheet"
+	    type="text/css"
+	    href="../static/styles/file.css">
+{% endblock %}
+
+{% block header %}
+	<h1 align="center">Profile</h1>
+    you login as {{ request.user }}
+    <a href="{% url 'logout' %}"><button> LogOut </button></a>
+{% endblock %}
+
+{% block nav %}
+{% endblock %}
+
+{% block content %}
+{% endblock %}
+
+{% block footer %}
+{% endblock %}

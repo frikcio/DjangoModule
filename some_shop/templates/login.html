@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block head %}
+    <title>Login</title>
+    <link
+	    rel="stylesheet"
+	    type="text/css"
+	    href="../static/styles/file.css">
+{% endblock %}
+
+{% block header %}
+	<h1 align="center"> Login </h1>
+{% endblock %}
+
+{% block nav %}
+	{% if not request.user.is_authenticated %}
+		<span> Wanna register? <a href="{% url 'register' %}"><button> Sign Up </button></a></span>
+	{% else %}
+		<a href="{% url 'logout' %}"><button> LogOut </button></a>
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+	{% if not request.user.is_authenticated %}
+		<form method="post">
+			{% csrf_token %}
+			{{ form.as_p }}
+			<input type="submit" value="Login">
+		</form>
+	{% else %}
+		You has login as {{request.user}}
+	{% endif%}
+{% endblock %}
+
+{% block footer %}
+{% endblock %}

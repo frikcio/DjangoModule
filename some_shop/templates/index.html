@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block head %}
+    <title>Home Page</title>
+    <link
+	    rel="stylesheet"
+	    type="text/css"
+	    href="../static/styles/file.css">
+{% endblock %}
+
+{% block header %}
+	<h1 align="center">HOME PAGE</h1>
+{% endblock %}
+
+{% block nav %}
+	{% if not request.user.is_authenticated %}
+		<span> Have account? <a href="{% url 'login' %}"><button> LogIn </button></a></span><br>
+		 No?<a href="{% url 'register' %}"><button> Register </button></a>
+	{% else %}
+		<a href="{% url 'logout' %}"><button> LogOut </button></a>
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+    {{ request.user }}
+{% endblock %}
+
+{% block footer %}
+{% endblock %}
