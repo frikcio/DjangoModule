@@ -9,12 +9,21 @@
 {% endblock %}
 
 {% block header %}
-	<h1 align="center">Profile</h1>
-    you login as {{ request.user }}
-    <a href="{% url 'logout' %}"><button> LogOut </button></a>
+    <div align="right">
+        <h1 align="center">Profile</h1>
+        you login as {{ request.user }}
+         <a href="{% url 'logout' %}"><button> LogOut </button></a>
+        {% if not request.user.is_speruser %}<br>
+            purse: {{ request.user.purse }}
+        {% endif %}
+    </div>
 {% endblock %}
 
 {% block nav %}
+    {% if request.user.is_superuser %}
+        <a href="{% url "append" %}"><button> Append product </button></a>
+    {% endif %}
+    <a href="{% url "home" %}"><button> Home page </button></a>
 {% endblock %}
 
 {% block content %}

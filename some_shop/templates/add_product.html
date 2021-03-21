@@ -9,12 +9,21 @@
 {% endblock %}
 
 {% block header %}
+    <h1 align="center">Append product</h1>
 {% endblock %}
 
 {% block nav %}
+    <a href="{% url 'profile' request.user.pk %}"><button> Back </button></a>
 {% endblock %}
 
 {% block content %}
+    <div align="center">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Append</button>
+        </form>
+    </div>
 {% endblock %}
 
 {% block footer %}

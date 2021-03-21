@@ -9,12 +9,19 @@
 {% endblock %}
 
 {% block header %}
+    <h1 align="center"> Change Product </h1>
 {% endblock %}
 
 {% block nav %}
+    <a href="{% url "about" object.pk %}"><button> Back </button></a>
 {% endblock %}
 
 {% block content %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" value="update">Update</button>
+    </form>
 {% endblock %}
 
 {% block footer %}

@@ -9,12 +9,32 @@
 {% endblock %}
 
 {% block header %}
+    <h1 align="center">About</h1>
+
 {% endblock %}
 
 {% block nav %}
+    <a href="{% url "home" %}"><button> Back </button></a>
 {% endblock %}
 
 {% block content %}
+    <div align="center">
+        {{ object.name }}<br>
+        <img src="{{ object.image }}" alt="image"><br>
+        about: {{ object.about }}<br>
+        price: {{ object.price }}$<br>
+        count: {{ object.count }}<br>
+        {% if request.user.is_superuser %}
+            <a href="{% url "change_product" object.pk %}"><button> Change </button></a>
+        {% elif request.user.is_authenticated %}
+            <form method="post" action="{% url "buy_product" object.pk %}">
+                {% csrf_token %}
+                {{ buy }}
+                <button type="submit" value="Buy">Buy</button>
+            </form>
+        {% endif %}
+    </div>
+
 {% endblock %}
 
 {% block footer %}

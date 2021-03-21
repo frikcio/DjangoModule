@@ -10,10 +10,13 @@ class ShopUser(AbstractUser):
 
 class Product(models.Model):
     name = models.CharField(max_length=150, blank=False, null=False)
-    image = models.ImageField()
+    image = models.ImageField(upload_to="photo")
     about = models.TextField()
     price = models.PositiveIntegerField()
     count = models.PositiveIntegerField()
+
+    def __str__(self):
+        return self.name
 
 
 class Purchase(models.Model):
