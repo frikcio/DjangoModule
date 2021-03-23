@@ -23,15 +23,21 @@
         <img src="{{ object.image }}" alt="image"><br>
         about: {{ object.about }}<br>
         price: {{ object.price }}$<br>
-        count: {{ object.count }}<br>
+        {% if product.count > 0 %}
+            count: {{ product.count }}
+        {% else %}
+            <span style="background-color: yellow">not available</span>
+        {% endif %}
         {% if request.user.is_superuser %}
             <a href="{% url "change_product" object.pk %}"><button> Change </button></a>
         {% elif request.user.is_authenticated %}
-            <form method="post" action="{% url "buy_product" object.pk %}">
                 {% csrf_token %}
-                {{ buy }}
-                <button type="submit" value="Buy">Buy</button>
-            </form>
+                {% if object.count > 0 %}
+                    <form method="post" action="{% url "buy_product" object.pk %}">
+                        {{ form }}
+                        <button type="submit" value="Buy">Buy</button>
+                    </form>
+                {% endif %}
         {% endif %}
     </div>
 

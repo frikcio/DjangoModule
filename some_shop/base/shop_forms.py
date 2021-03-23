@@ -1,3 +1,5 @@
+import pdb
+
 from django.contrib.auth.forms import UserCreationForm
 from django.forms import ModelForm
 
@@ -24,10 +26,7 @@ class BuyForm(ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         need_count = cleaned_data.get("count")
-        product_count = Purchase.objects.get()
-        product_price = Purchase.product.price
-        user_money = Purchase.user.purse
-        if need_count > product_count:
-            self.add_error("count", "to mach")
-        if product_price > user_money:
-            self.add_error(None, "not much money")
+        if not need_count > 0:
+            self.add_error("count", f"count must be more than {need_count}")
+
+

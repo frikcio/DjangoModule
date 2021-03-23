@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block head %}
+    <title>Purchases</title>
+    <link
+	    rel="stylesheet"
+	    type="text/css"
+	    href="../static/styles/file.css">
+{% endblock %}
+
+{% block header %}
+    <h1 align="center"> Purchases </h1>
+{% endblock %}
+
+{% block nav %}
+    <a href="{% url "home" %}"><button> Home page </button></a>
+    <a href="{% url "profile" request.user.id %}"><button> {{ request.user }} </button></a>
+{% endblock %}
+
+{% block content %}
+    <div align="center">
+        {% for purchase in object_list %}
+            {% if purchase.user == request.user %}
+                <hr>
+                {{ purchase }}
+                count: {{ purchase.count }} <br>
+                {{ purchase.date }}
+                <form action="{% url "return" purchase.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" value="return">return</button>
+                </form><br>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endblock %}
+
+{% block footer %}
+{% endblock %}
