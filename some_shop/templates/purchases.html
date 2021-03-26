@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block header %}
-    <h1 align="center"> Purchases </h1>
+    <h1> Purchases </h1>
 {% endblock %}
 
 {% block nav %}
@@ -18,20 +18,49 @@
 {% endblock %}
 
 {% block content %}
-    <div align="center">
-        {% for purchase in object_list %}
-            {% if purchase.user == request.user %}
-                <hr>
+    {% for purchase in object_list %}
+        {% if purchase.user == request.user %}
+            <hr>
+            {% if purchase.status and not purchase.return_status %}
+                <div style="background-color: yellow">
+            {% elif purchase.status and purchase.return_status %}
+                <div style="background-color: darkred">
+            {% endif %}
                 {{ purchase }}
                 count: {{ purchase.count }} <br>
-                {{ purchase.date }}
-                <form action="{% url "return" purchase.pk %}">
-                    {% csrf_token %}
-                    <button type="submit" value="return">return</button>
-                </form><br>
+                {{ purchase.date }}<br>
+                {% if not purchase.status and not purchase.return_status %}
+                    <form method="post" action="{% url "return" purchase.pk %}">
+                        {% csrf_token %}
+                        {{ form }}
+                        <button type="submit" value="return">return</button>
+                    </form><br>
+                {% elif purchase.return_status %}
+                    return not accept
+                {% else %}
+                    return is already send
+                {% endif %}
+                {{ messages.info }}
             {% endif %}
-        {% endfor %}
-    </div>
+        </div>
+    {% endfor %}
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1">&laquo; first</a>
+                <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">next</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+            {% endif %}
+        </span>
+     </div>
 {% endblock %}
 
 {% block footer %}

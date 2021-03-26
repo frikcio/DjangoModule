@@ -3,7 +3,7 @@ import pdb
 from django.contrib.auth.forms import UserCreationForm
 from django.forms import ModelForm
 
-from base.models import ShopUser, Product, Purchase
+from base.models import ShopUser, ProductModel, PurchaseModel, ReturnModel
 
 
 class RegisterForm(UserCreationForm):
@@ -14,13 +14,13 @@ class RegisterForm(UserCreationForm):
 
 class AppendForm(ModelForm):
     class Meta:
-        model = Product
-        exclude = []
+        model = ProductModel
+        exclude = ["image"]
 
 
 class BuyForm(ModelForm):
     class Meta:
-        model = Purchase
+        model = PurchaseModel
         fields = ["count"]
 
     def clean(self):
@@ -30,3 +30,7 @@ class BuyForm(ModelForm):
             self.add_error("count", f"count must be more than {need_count}")
 
 
+class ReturnForm(ModelForm):
+    class Meta:
+        model = ReturnModel
+        fields = []

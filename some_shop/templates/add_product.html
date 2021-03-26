@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block header %}
-    <h1 align="center">Append product</h1>
+    <h1>Append product</h1>
 {% endblock %}
 
 {% block nav %}
@@ -17,13 +17,11 @@
 {% endblock %}
 
 {% block content %}
-    <div align="center">
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Append</button>
-        </form>
-    </div>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Append</button>
+    </form>
 {% endblock %}
 
 {% block footer %}

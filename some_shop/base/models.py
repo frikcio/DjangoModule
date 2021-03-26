@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils import timezone
 
 
 class ShopUser(AbstractUser):
@@ -11,9 +12,9 @@ class ShopUser(AbstractUser):
         return self.username
 
 
-class Product(models.Model):
+class ProductModel(models.Model):
     name = models.CharField(max_length=150, blank=False, null=False)
-    image = models.ImageField(upload_to="photo")
+    image = models.ImageField(blank=True, null=True, upload_to="photo")
     about = models.TextField()
     price = models.PositiveIntegerField()
     count = models.PositiveIntegerField()
@@ -22,20 +23,27 @@ class Product(models.Model):
         return self.name
 
 
-class Purchase(models.Model):
+class PurchaseModel(models.Model):
     user = models.ForeignKey(ShopUser, on_delete=models.DO_NOTHING, related_name="purchases")
-    product = models.ForeignKey(Product, on_delete=models.DO_NOTHING, related_name="purchases")
+    product = models.ForeignKey(ProductModel, on_delete=models.DO_NOTHING, related_name="purchases")
     count = models.PositiveIntegerField()
-    date = models.DateTimeField(auto_now=True)
+    date = models.DateTimeField(auto_now_add=True)
+    status = models.BooleanField(default=False)
+    return_status = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ["-date"]
 
     def __str__(self):
         return f"{self.product}"
 
 
-class Return(models.Model):
-    purchase = models.ForeignKey(Purchase, on_delete=models.DO_NOTHING)
-    date = models.DateTimeField(auto_now=True)
+class ReturnModel(models.Model):
+    purchase = models.ForeignKey(PurchaseModel, on_delete=models.CASCADE, related_name="returns")
+    date = models.DateTimeField(auto_now_add= True)
     user = models.ForeignKey(ShopUser, on_delete=models.DO_NOTHING, related_name="returns")
+    class Meta:
+        ordering = ["-date"]
 
     def __str__(self):
-        return self.purchase.product
+        return f"{self.purchase}"

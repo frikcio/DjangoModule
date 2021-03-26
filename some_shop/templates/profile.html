@@ -9,14 +9,14 @@
 {% endblock %}
 
 {% block header %}
-        <h1 align="center">Profile</h1>
+        <h1>Profile</h1>
 {% endblock %}
 
 {% block nav %}
     <a href="{% url "home" %}"><button> Home page </button></a>
     {% if request.user.is_superuser %}
         <a href="{% url "append" %}"><button> Append product </button></a>
-        <a href="/admin/"><button> AdminDjango </button></a>
+        <a href="{% url 'returns_list' %}"><button> returns </button></a><br>
     {% else %}
         <a href="{% url "purchases_list" %}"><button> Purchases list </button></a>
     {% endif %}
@@ -24,10 +24,12 @@
 {% endblock %}
 
 {% block content %}
-    you login as {{ request.user }}
-        {% if not request.user.is_speruser %}<br>
+    <div align="right">
+        you login as {{ request.user }}
+        {% if not request.user.is_superuser %}<br>
             purse: {{ request.user.purse }}
         {% endif %}
+    </div>
 {% endblock %}
 
 {% block footer %}

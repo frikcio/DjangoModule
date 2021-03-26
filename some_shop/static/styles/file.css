@@ -1,0 +1,16 @@
+header{
+	min-width: 1220px;
+	background-color: #d3b714;
+	height: 100px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.admin_buttons{
+    display: flex;
+    justify-content: space-between;
+}
+div{
+    background-color: aqua;
+}

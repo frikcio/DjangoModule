@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block header %}
-    <h1 align="center">About</h1>
+    <h1>About</h1>
 
 {% endblock %}
 
@@ -18,29 +18,36 @@
 {% endblock %}
 
 {% block content %}
-    <div align="center">
-        {{ object.name }}<br>
-        <img src="{{ object.image }}" alt="image"><br>
-        about: {{ object.about }}<br>
-        price: {{ object.price }}$<br>
-        {% if product.count > 0 %}
-            count: {{ product.count }}
-        {% else %}
-            <span style="background-color: yellow">not available</span>
-        {% endif %}
-        {% if request.user.is_superuser %}
-            <a href="{% url "change_product" object.pk %}"><button> Change </button></a>
-        {% elif request.user.is_authenticated %}
+    {{ object.name }}<br>
+    <img src="{{ object.image }}" alt="image"><br>
+    about: {{ object.about }}<br>
+    price: {{ object.price }}$<br>
+    {% if object.count > 0 %}
+        count: {{ object.count }}
+    {% else %}
+        <span style="background-color: yellow">not available</span>
+    {% endif %}
+    {% if request.user.is_superuser %}
+        <a href="{% url "change_product" object.pk %}"><button> Change </button></a>
+    {% elif request.user.is_authenticated %}
+        {% csrf_token %}
+        {% if object.count > 0 %}
+            <form method="post" action="{% url "buy_product" object.pk %}">
                 {% csrf_token %}
-                {% if object.count > 0 %}
-                    <form method="post" action="{% url "buy_product" object.pk %}">
-                        {{ form }}
-                        <button type="submit" value="Buy">Buy</button>
-                    </form>
-                {% endif %}
+                {{ form }}
+                <button type="submit" value="Buy">Buy</button>
+            </form>
         {% endif %}
-    </div>
-
+    {% endif %}
+    {% if messages.error %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li
+                        {% if message.error %} class="{{ message.info }}" {% endif %}>{{ message }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
 {% endblock %}
 
 {% block footer %}
