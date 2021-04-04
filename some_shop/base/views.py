@@ -4,6 +4,7 @@ import pdb
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
+from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.utils import timezone
@@ -74,10 +75,10 @@ class Reject(DeleteView):
         return_object = self.get_object()
         purchase = return_object.purchase
         purchase.return_status = True
-        purchase.save()
-        return_object.delete()
+        with transaction.atomic():
+            purchase.save()
+            return_object.delete()
         return HttpResponseRedirect(success_url)
-
 
 
 class Accept(DeleteView):
@@ -90,9 +91,10 @@ class Accept(DeleteView):
         user = purchase_object.user
         user.purse += product.price * purchase_object.count
         product.count += purchase_object.count
-        user.save()
-        product.save()
-        purchase_object.delete()
+        with transaction.atomic():
+            user.save()
+            product.save()
+            purchase_object.delete()
         return HttpResponseRedirect(success_url)
 
 
@@ -158,9 +160,10 @@ class ProductBuy(LoginRequiredMixin, CreateView):
             purchase = form.save(commit=False)
             purchase.user = user
             purchase.product = product
-            user.save()
-            product.save()
-            purchase.save()
+            with transaction.atomic():
+                user.save()
+                product.save()
+                purchase.save()
             return super().form_valid(form=form)
         elif product.count < form.cleaned_data["count"]:
             messages.error(self.request, "not so match")
