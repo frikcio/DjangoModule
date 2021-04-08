@@ -1,7 +1,13 @@
 
-from django.urls import path
+from django.urls import path, include
+from rest_framework import routers
 
+from .API.resurses import AuthorViewSet, BookViewSet
 from .views import *
+
+router = routers.SimpleRouter()
+router.register(r'author', AuthorViewSet)
+router.register(r'book', BookViewSet)
 
 urlpatterns = [
     path("", ProductListView.as_view(), name="home"),
@@ -18,4 +24,5 @@ urlpatterns = [
     path("products/returns/accept/<int:pk>", Accept.as_view(), name="accept"),
     path("user/purchases/", PurchasesList.as_view(), name="purchases_list"),
     path("user/return/<int:pk>", Return.as_view(), name="return"),
+    path("api/", include(router.urls)),
 ]

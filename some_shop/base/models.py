@@ -14,7 +14,7 @@ class ShopUser(AbstractUser):
 
 class ProductModel(models.Model):
     name = models.CharField(max_length=150, blank=False, null=False)
-    image = models.ImageField(blank=True, null=True, upload_to="photo")
+    image = models.ImageField(blank=True, null=True)
     about = models.TextField()
     price = models.PositiveIntegerField()
     count = models.PositiveIntegerField()
@@ -42,8 +42,25 @@ class ReturnModel(models.Model):
     purchase = models.ForeignKey(PurchaseModel, on_delete=models.CASCADE, related_name="returns")
     date = models.DateTimeField(auto_now_add= True)
     user = models.ForeignKey(ShopUser, on_delete=models.DO_NOTHING, related_name="returns")
+
     class Meta:
         ordering = ["-date"]
 
     def __str__(self):
         return f"{self.purchase}"
+
+
+class Author(models.Model):
+    name = models.CharField(max_length=100)
+    age = models.PositiveIntegerField()
+
+    def __str__(self):
+        return self.name
+
+
+class Book(models.Model):
+    title = models.CharField(max_length=120)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name="book")
+
+    def __str__(self):
+        return self.title
