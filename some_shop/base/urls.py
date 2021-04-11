@@ -1,8 +1,9 @@
 
 from django.urls import path, include
 from rest_framework import routers
+from rest_framework.authtoken import views
 
-from .API.resurses import AuthorViewSet, BookViewSet
+from .API.resurses import AuthorViewSet, BookViewSet, AuthorizationView, GetToken
 from .views import *
 
 router = routers.SimpleRouter()
@@ -13,6 +14,8 @@ urlpatterns = [
     path("", ProductListView.as_view(), name="home"),
     path("register/", Register.as_view(), name="register"),
     path("login/", Login.as_view(), name="login"),
+    path("log/", AuthorizationView.as_view()),
+    path("get_token/", GetToken.as_view()),
     path("logout/", Logout.as_view(), name="logout"),
     path("profile/<int:pk>/", Profile.as_view(), name="profile"),
     path("product/add/", ProductAppend.as_view(), name="append"),

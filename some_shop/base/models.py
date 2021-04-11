@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils import timezone
+from rest_framework.authtoken.models import Token
 
 
 class ShopUser(AbstractUser):
@@ -64,3 +65,7 @@ class Book(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class TemporaryToken(Token):
+    last_action = models.DateTimeField(null=True)

@@ -1,10 +1,12 @@
-from rest_framework import viewsets
-from rest_framework import serializers
+from rest_framework import viewsets, permissions
+from rest_framework.authentication import BasicAuthentication, TokenAuthentication
+from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from base.API.serializers import AuthorSerializer, BookSerializer, AuthorBooksSerializer
-from base.models import Author, Book
+from base.models import Author, Book, TemporaryToken
 
 
 class AuthorViewSet(viewsets.ModelViewSet):
@@ -40,3 +42,24 @@ class BookViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(title=serializer.validated_data["title"]+"!")
+
+
+class AuthorizationView(APIView):
+    authentication_classes = [BasicAuthentication, TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        content = {
+            "user": request.user.username,
+            "token": request.auth.key,
+        }
+        return Response(content)
+
+
+class GetToken(ObtainAuthToken):
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token, created = TemporaryToken.objects.get_or_create(user=user)
+        return Response({'token': token.key})

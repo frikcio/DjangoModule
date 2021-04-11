@@ -2,10 +2,8 @@
 
 {% block head %}
     <title>Change password</title>
-    <link
-	    rel="stylesheet"
-	    type="text/css"
-	    href="../static/styles/file.css">
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'styles/file.css' %}">
 {% endblock %}
 
 {% block header %}

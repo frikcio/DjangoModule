@@ -2,10 +2,8 @@
 
 {% block head %}
     <title>Home Page</title>
-    <link
-	    rel="stylesheet"
-	    type="text/css"
-	    href="../static/styles/file.css">
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'styles/file.css' %}">
 {% endblock %}
 
 {% block header %}
@@ -26,7 +24,7 @@
     {% for product in object_list %}
         <hr>
         <div>
-            <img src="/static/photo/headphones.jpg" alt="image"><br>
+            <img src="{% static product.image %}" alt="image">
             <a href="{% url 'about' product.pk %}"> {{ product.name }} </a> <br>
             price: {{ product.price }}$<br>
             {% if product.count > 0 %}

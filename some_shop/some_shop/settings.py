@@ -130,3 +130,8 @@ STATIC_URL = '/static/'
 
 AUTH_USER_MODEL = 'base.ShopUser'
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'base.authentication.TemporaryTokenAuth',
+    ]
+}

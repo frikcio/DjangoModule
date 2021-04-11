@@ -7,29 +7,18 @@
     </head>
     <body>
         <header>
-            <div align="center">
                 {% block header %}
                 {% endblock %}
-            </div>
         </header>
         <nav>
             <hr>
-            <div align="right">
-                <div style="
-                display: flex;
-                justify-content: space-around;
-                width: 300px;">
                 {% block nav %}
                 {% endblock %}
-                </div>
-            </div>
             <hr>
         </nav>
         <article>
-            <div align="center">
                 {% block content %}
                 {% endblock %}
-            </div>
         </article>
         <footer>
             {% block footer %}

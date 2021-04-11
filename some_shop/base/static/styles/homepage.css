@@ -2,15 +2,12 @@ header{
 	min-width: 1220px;
 	background-color: #d3b714;
 	height: 100px;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
 }
 
-.admin_buttons{
+nav{
     display: flex;
     justify-content: space-between;
 }
-div{
+body div{
     background-color: aqua;
 }
