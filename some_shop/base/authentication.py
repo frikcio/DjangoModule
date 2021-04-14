@@ -13,7 +13,7 @@ class TemporaryTokenAuth(TokenAuthentication):
         inter_value = super().authenticate(request=request)
         if inter_value:
             user, token = inter_value
-            if token.last_action and (timezone.now() - token.last_action) > settings.TOKEN_LIFETIME*60:
+            if token.last_action and (timezone.now() - token.last_action) > settings.TOKEN_LIFETIME:
                 msg = "Token's lifetime is ended"
                 raise exceptions.AuthenticationFailed(msg)
             token.last_action = timezone.now()

@@ -33,7 +33,7 @@ class UserSerializer(serializers.ModelSerializer):
 class PurchaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = PurchaseModel
-        fields = ["id", "user", "product", "count", "date"]
+        fields = ["id", "product", "count", "date"]
 
 
 class ReturnSerializer(serializers.ModelSerializer):
