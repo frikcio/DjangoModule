@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from base.models import Author, Book, ShopUser
+from base.models import *
 
 
 class AuthorSerializer(serializers.ModelSerializer):
@@ -20,3 +20,29 @@ class BookSerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
         fields = ["id", "title", "author"]
+
+
+class UserSerializer(serializers.ModelSerializer):
+    user = serializers.CharField(source=ShopUser.username)
+
+    class Meta:
+        model = ShopUser
+        fields = ["id", "user", "purse"]
+
+
+class PurchaseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PurchaseModel
+        fields = ["id", "user", "product", "count", "date"]
+
+
+class ReturnSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ReturnModel
+        fields = ["id", "user", "purchase", "date"]
+
+
+class ProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductModel
+        fields = ["id", "name", "price", "count"]

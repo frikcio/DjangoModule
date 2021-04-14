@@ -133,5 +133,10 @@ AUTH_USER_MODEL = 'base.ShopUser'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'base.authentication.TemporaryTokenAuth',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
     ]
 }
+
+TOKEN_LIFETIME = 10  # set time in minutes

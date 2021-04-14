@@ -10,6 +10,7 @@ from django.shortcuts import redirect
 from django.utils import timezone
 from django.views.generic import CreateView, DetailView, ListView, UpdateView, DeleteView
 from .models import ShopUser, ProductModel, PurchaseModel, ReturnModel
+from .my_exseptions import NotMuchMoney, NotMuchCount, NotZeroCount
 from .shop_forms import RegisterForm, AppendForm, BuyForm, ReturnForm
 
 
@@ -152,29 +153,20 @@ class ProductBuy(LoginRequiredMixin, CreateView):
     form_class = BuyForm
 
     def form_valid(self, form):
-        product = ProductModel.objects.get(pk=self.kwargs["pk"])
-        user = self.request.user
-        if product.count >= form.cleaned_data["count"] and user.purse >= (product.price*form.cleaned_data["count"]):
-            product.count -= form.cleaned_data["count"]
-            user.purse -= (product.price*form.cleaned_data["count"])
+        try:
             purchase = form.save(commit=False)
-            purchase.user = user
-            purchase.product = product
-            with transaction.atomic():
-                user.save()
-                product.save()
-                purchase.save()
-            return super().form_valid(form=form)
-        elif product.count < form.cleaned_data["count"]:
-            messages.error(self.request, "not so match")
-            return redirect(f"/product/about/{self.kwargs['pk']}")
-        elif user.purse < (product.price*form.cleaned_data["count"]):
-            messages.error(self.request, "not enough money")
+            purchase.user = self.request.user
+            purchase.product = ProductModel.objects.get(pk=self.kwargs["pk"])
+            purchase.save()
+            return HttpResponseRedirect(self.get_success_url())
+        except NotMuchMoney:
+            messages.error(self.request, "You have not enough money")
+        except NotMuchCount:
+            messages.error(self.request, "We have not enough product's count")
+        except NotZeroCount:
+            messages.error(self.request, "product count must be more than 0")
+        finally:
             return redirect(f"/product/about/{self.kwargs['pk']}")
 
     def get_success_url(self):
         return "/user/purchases"
-
-    def form_invalid(self, form):
-        messages.error(self.request, "product count must be more than 0")
-        return redirect(f"/product/about/{self.kwargs['pk']}")

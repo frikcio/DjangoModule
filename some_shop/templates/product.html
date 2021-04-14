@@ -37,12 +37,14 @@
             </form>
         {% endif %}
     {% endif %}
-    {% if messages.error %}
+    {% if messages %}
         <ul class="messages">
             {% for message in messages %}
-                <li
-                        {% if message.error %} class="{{ message.info }}" {% endif %}>{{ message }}
-                </li>
+                {% if message.tags == "error" %}
+                    <li style= "color:red;">
+                        {{ message }}
+                    </li>
+                {% endif %}
             {% endfor %}
         </ul>
     {% endif %}
