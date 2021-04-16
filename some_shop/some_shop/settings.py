@@ -140,3 +140,5 @@ REST_FRAMEWORK = {
 }
 
 TOKEN_LIFETIME = 10  # set time in minutes
+
+PURCHASE_RETURN_TIME = 3    # set time in minutes

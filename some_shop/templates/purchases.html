@@ -23,24 +23,36 @@
                 <div style="background-color: yellow">
             {% elif purchase.status and purchase.return_status %}
                 <div style="background-color: darkred">
-            {% endif %}
-                {{ purchase }}
-                count: {{ purchase.count }} <br>
-                {{ purchase.date }}<br>
-                {% if not purchase.status and not purchase.return_status %}
-                    <form method="post" action="{% url "return" purchase.pk %}">
-                        {% csrf_token %}
-                        {{ form }}
-                        <button type="submit" value="return">return</button>
-                    </form><br>
-                {% elif purchase.return_status %}
-                    return not accept
-                {% else %}
-                    return is already send
-                {% endif %}
-                {{ messages.info }}
-            {% endif %}
-        </div>
+            {% endif %} >
+                    {{ purchase }}
+                    count: {{ purchase.count }} <br>
+                    {{ purchase.date }}<br>
+                    {% if not purchase.status and not purchase.return_status %}
+                        <form method="post" action="{% url "return" purchase.pk %}">
+                            {% csrf_token %}
+                            {{ form }}
+                            <button type="submit" value="return">return</button>
+                        </form><br>
+                    {% elif purchase.return_status %}
+                        return not accept
+                    {% else %}
+                        return is already send
+                    {% endif %}
+                    {% if messages %}
+                        <ul class="messages">
+                            {% for message in messages %}
+                                {% if message.tags == "info" and purchase.return_status %}
+                                    <li style= "color:yellow;">
+                                        {{ message }}
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+                </div>
+        {% endif %}
+
     {% endfor %}
     <div class="pagination">
         <span class="step-links">

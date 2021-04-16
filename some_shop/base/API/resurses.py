@@ -1,17 +1,16 @@
-from django.db import transaction
 from django.utils import timezone
 from rest_framework import viewsets, permissions
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.decorators import action
 from rest_framework import exceptions
+from rest_framework.exceptions import APIException
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from base.API.serializers import AuthorSerializer, BookSerializer, AuthorBooksSerializer, PurchaseSerializer, \
-    ProductSerializer
+from base.API.serializers import *
 from base.authentication import TemporaryTokenAuth
-from base.models import Author, Book, TemporaryToken, PurchaseModel, ProductModel
+from base.models import *
 from base.my_exseptions import NotMuchMoney, NotMuchCount, NotZeroCount
 from some_shop import settings
 
@@ -69,39 +68,57 @@ class GetToken(ObtainAuthToken):
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
         token, created = TemporaryToken.objects.get_or_create(user=user)
-        if token.last_action and (timezone.now() - token.last_action) > settings.TOKEN_LIFETIME * 60:
-            token = TemporaryToken.objects.update(user=user)
+        if token.last_action and (timezone.now() - token.last_action).seconds > settings.TOKEN_LIFETIME*60:
+            token.delete()
+            token = TemporaryToken.objects.create(user=user)
         return Response({'token': token.key})
 
 
-class ProductViewSet(viewsets.ModelViewSet):
+class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     authentication_classes = [BasicAuthentication, TemporaryTokenAuth]
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     queryset = ProductModel.objects.all()
     serializer_class = ProductSerializer
 
 
 class PurchaseViewSet(viewsets.ModelViewSet):
     authentication_classes = [BasicAuthentication, TemporaryTokenAuth]
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated]
     queryset = PurchaseModel.objects.all()
     serializer_class = PurchaseSerializer
 
     def list(self, request, *args, **kwargs):
-        if request.query_params:
-            queryset = PurchaseModel.objects.filter(user=self.request.user)
-        else:
-            queryset = self.filter_queryset(self.get_queryset())
+        queryset = PurchaseModel.objects.filter(user=self.request.user)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
     def perform_create(self, serializer):
-        product = ProductModel.objects.get(pk=serializer.validated_data["product"].pk)
         try:
-            serializer.save(user=self.request.user, product=product)
+            serializer.save(user=self.request.user)
         except NotMuchMoney:
-            raise exceptions.APIException("You have not enough money")
+            raise APIException("You have not enough money")
         except NotMuchCount:
-            raise exceptions.APIException("We have not enough product's count")
+            raise APIException("We have not enough product's count")
         except NotZeroCount:
-            raise exceptions.APIException("product count must be more than 0")
+            raise APIException("product count must be more than 0")
+
+
+class ReturnPurchaseViewSet(viewsets.ModelViewSet):
+    authentication_classes = [BasicAuthentication, TemporaryTokenAuth]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    queryset = ReturnModel.objects.all()
+    serializer_class = ReturnSerializer
+
+    def list(self, request, *args, **kwargs):
+        queryset = ReturnModel.objects.filter(purchase__user=self.request.user)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def perform_create(self, serializer):
+        purchase = serializer.validated_data["purchase"]
+        if purchase.user == self.request.user:
+            try:
+                serializer.save()
+            except TimeUp:
+                raise APIException("Time is up")
+        else:
+            raise APIException("You haven't that purchase")

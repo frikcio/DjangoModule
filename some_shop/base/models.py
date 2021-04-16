@@ -6,7 +6,8 @@ from django.db.migrations import exceptions
 from django.utils import timezone
 from rest_framework.authtoken.models import Token
 
-from base.my_exseptions import NotMuchCount, NotMuchMoney, NotZeroCount
+from base.my_exseptions import NotMuchCount, NotMuchMoney, NotZeroCount, TimeUp
+from some_shop import settings
 
 
 class ShopUser(AbstractUser):
@@ -45,17 +46,18 @@ class PurchaseModel(models.Model):
 
     def save(self, *args, **kwargs):
         need_count = self.count
-        if self.product.count >= need_count and self.user.purse >= (
-                self.product.price * need_count) and need_count != 0:
-            self.product.count -= need_count
-            self.user.purse -= (self.product.price * need_count)
+        product = self.product
+        user = self.user
+        if product.count >= need_count != 0 and user.purse >= (product.price * need_count):
+            product.count -= need_count
+            user.purse -= (product.price * need_count)
             with transaction.atomic():
-                self.user.save()
-                self.product.save()
+                user.save()
+                product.save()
                 super(PurchaseModel, self).save(*args, **kwargs)
-        elif self.product.count < need_count:
+        elif product.count < need_count:
             raise NotMuchCount()
-        elif self.user.purse < (self.product.price * need_count):
+        elif user.purse < (product.price * need_count):
             raise NotMuchMoney()
         elif need_count == 0:
             raise NotZeroCount()
@@ -65,12 +67,21 @@ class PurchaseModel(models.Model):
 
 
 class ReturnModel(models.Model):
-    purchase = models.ForeignKey(PurchaseModel, on_delete=models.CASCADE, related_name="returns")
+    purchase = models.ForeignKey(PurchaseModel, on_delete=models.CASCADE, unique=True, related_name="returns")
     date = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(ShopUser, on_delete=models.DO_NOTHING, related_name="returns")
 
     class Meta:
         ordering = ["-date"]
+
+    def save(self, *args, **kwargs):
+        purchase = self.purchase
+        if (timezone.now() - purchase.date).seconds < settings.PURCHASE_RETURN_TIME*60:
+            purchase.status = True
+            with transaction.atomic():
+                purchase.save()
+                super(ReturnModel, self).save(*args, **kwargs)
+        else:
+            raise TimeUp()
 
     def __str__(self):
         return f"{self.purchase}"

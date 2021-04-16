@@ -10,7 +10,7 @@ from django.shortcuts import redirect
 from django.utils import timezone
 from django.views.generic import CreateView, DetailView, ListView, UpdateView, DeleteView
 from .models import ShopUser, ProductModel, PurchaseModel, ReturnModel
-from .my_exseptions import NotMuchMoney, NotMuchCount, NotZeroCount
+from .my_exseptions import NotMuchMoney, NotMuchCount, NotZeroCount, TimeUp
 from .shop_forms import RegisterForm, AppendForm, BuyForm, ReturnForm
 
 
@@ -43,29 +43,21 @@ class Return(LoginRequiredMixin, CreateView):
     form_class = ReturnForm
 
     def form_valid(self, form):
-        time = timezone.now().timestamp()
         purchase = PurchaseModel.objects.get(pk=self.kwargs["pk"])
-        if (purchase.date + datetime.timedelta(minutes=3)).timestamp() > time:
-            user = self.request.user
-            purchase.status = True
-            purchase.save()
+        try:
             purchase_return = form.save(commit=False)
             purchase_return.purchase = purchase
-            purchase_return.user = user
             purchase_return.save()
-            return super().form_valid(form=form)
-        else:
+        except TimeUp:
             purchase.return_status = True
+            purchase.status = True
             purchase.save()
-            messages.info(self.request, "time is up")
-            return redirect("/user/purchases/")
+            messages.info(self.request, "Time is up")
+        finally:
+            return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
         return "/user/purchases/"
-
-    def form_invalid(self, form):
-        messages.error(self.request, "Error")
-        return redirect("/")
 
 
 class Reject(DeleteView):

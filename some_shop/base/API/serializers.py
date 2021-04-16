@@ -22,14 +22,6 @@ class BookSerializer(serializers.ModelSerializer):
         fields = ["id", "title", "author"]
 
 
-class UserSerializer(serializers.ModelSerializer):
-    user = serializers.CharField(source=ShopUser.username)
-
-    class Meta:
-        model = ShopUser
-        fields = ["id", "user", "purse"]
-
-
 class PurchaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = PurchaseModel
@@ -39,7 +31,7 @@ class PurchaseSerializer(serializers.ModelSerializer):
 class ReturnSerializer(serializers.ModelSerializer):
     class Meta:
         model = ReturnModel
-        fields = ["id", "user", "purchase", "date"]
+        fields = ["id", "purchase", "date"]
 
 
 class ProductSerializer(serializers.ModelSerializer):

@@ -9,7 +9,8 @@ router = routers.SimpleRouter()
 router.register(r'author', AuthorViewSet)
 router.register(r'book', BookViewSet)
 router.register(r"product", ProductViewSet)
-router.register(r"purchase", PurchaseViewSet),
+router.register(r"purchase", PurchaseViewSet)
+router.register(r"return", ReturnPurchaseViewSet)
 
 urlpatterns = [
     path("", ProductListView.as_view(), name="home"),

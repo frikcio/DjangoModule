@@ -8,3 +8,7 @@ class NotMuchCount(ValueError):
 
 class NotZeroCount(ValueError):
     pass
+
+
+class TimeUp(ValueError):
+    pass
