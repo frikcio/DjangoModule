@@ -1,0 +1,13 @@
+header{
+	min-width: 1220px;
+	background-color: #d3b714;
+	height: 100px;
+}
+
+nav{
+    display: flex;
+    justify-content: space-between;
+}
+body div{
+    background-color: aqua;
+}
