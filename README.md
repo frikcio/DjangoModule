@@ -23,7 +23,7 @@ Run project in console:
 ```commandline
     docker-compose up
 ```
-or 
+or
 Run project in background:
 ```commandline
     docker-compose up -d
