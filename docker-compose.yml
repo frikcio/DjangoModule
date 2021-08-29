@@ -1,0 +1,78 @@
+version: '2'
+
+services:
+  db:
+    container_name: e_shop_db
+    image: postgres:13.3
+    volumes:
+      - db:/var/lib/postgresql/data
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_DB=$DB_NAME
+      - POSTGRES_USER=$DB_USER
+      - POSTGRES_PASSWORD=$DB_PASSWORD
+    networks:
+      - e_shop_net
+
+  backend:
+    build: backend/
+    container_name: e_shop_backend
+    ports:
+      - "${BACKEND_PORT}:${BACKEND_PORT}"
+    volumes:
+      - ./backend/:/home/backend/
+      - ../backend_static_storage:/home/backend/storage/static/
+      - ../backend_media_storage:/home/backend/storage/media/
+    env_file:
+      - .env
+    depends_on:
+      - db
+    networks:
+      - e_shop_net
+    restart: on-failure
+
+  redis:
+    container_name: e_shop_redis
+    image: redis:6.2
+    restart: always
+    command: redis-server
+    networks:
+      - e_shop_net
+
+  celery:
+    build: backend/
+    env_file:
+      - .env
+    container_name: backend_celery
+    command: celery -A server worker -l INFO
+    volumes:
+      - ./backend/:/home/backend/
+    links:
+      - redis
+    networks:
+      - e_shop_net
+    depends_on:
+      - backend
+      - redis
+    restart: always
+
+  celery-beat:
+    build: backend/
+    env_file:
+      - .env
+    container_name: backend_celery_beat
+    command: celery -A backend beat -s /home/celerybeat-schedule
+    volumes:
+      - ./backend/:/home/backend/
+    networks:
+      - e_shop_net
+    depends_on:
+      - backend
+      - redis
+    restart: always
+
+volumes:
+  db:
+networks:
+  e_shop_net:
